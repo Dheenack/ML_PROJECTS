@@ -1,0 +1,23 @@
+data = request.form
+    dic={'PRBUsageUL': int(data['prbUsageUL']), 
+         'PRBUsageDL': int(data['prbUsageDL']), 
+         'meanThrDL': int(data['meanThrDL']),
+         'meanThrUL': int(data['meanThrUL']),
+         'maxThrDL': int(data['maxThrDL']),
+         'maxThrUL': int(data['maxThrUL']),
+         'meanUE_DL':int(data['meanUE_DL']),
+         'meanUE_UL':int(data['meanUE_UL']),
+         'maxUE_DL':int(data['maxUE_DL']),
+         'maxUE_UL': int(data['maxUE_UL']),
+         'maxUE_UL_DL':int(data['maxUE_UL_DL']),
+         'cellNameEncoded': int(data['cellNameEncoded']),
+         'hour':int(data['hour']),
+         'dayOfWeek':int(data['dayOfWeek'])}
+    FEATURES = ['PRBUsageUL', 'PRBUsageDL', 'meanThr_DL', 'meanThr_UL', 'maxThr_DL', 'maxThr_UL',
+            'meanUE_DL', 'meanUE_UL', 'maxUE_DL', 'maxUE_UL', 'maxUE_UL+DL', 'CellName_encoded', 'Hour', 'DayOfWeek']
+    df = pd.DataFrame(dic,columns=FEATURES, index=[0])
+    print(df.dtypes)
+    # Ensure all features  are present
+    missing_features = [col for col in FEATURES if col not in df.columns]
+    if missing_features:
+        return jsonify({"error": f"Missing features: {missing_features}"}), 400

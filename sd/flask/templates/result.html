@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        .form-inline .form-control {
+            width: auto;
+            max-width: 200px;
+        }
+        .table-responsive {
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            overflow-x: auto;
+        }
+        .table th, .table td {
+            text-align: center;
+        }
+        .pagination {
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Anomaly Detection Results</h1>
+        <p>Total anomalies detected: <strong>{{ total_entries }}</strong></p>
+        
+        <!-- Filter Form -->
+        <form action="{{ url_for('result', page=current_page) }}" method="get" class="form-inline mb-4">
+            <div class="form-group mr-2">
+                <label for="min_prob" class="sr-only">Min Probability</label>
+                <input type="number" step="0.01" class="form-control" id="min_prob" name="min_prob" placeholder="Min Probability" value="{{ min_prob }}">
+            </div>
+            <div class="form-group mr-2">
+                <label for="max_prob" class="sr-only">Max Probability</label>
+                <input type="number" step="0.01" class="form-control" id="max_prob" name="max_prob" placeholder="Max Probability" value="{{ max_prob }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ url_for('result', page=current_page) }}" class="btn btn-secondary ml-2">Clear</a>
+        </form>
+        
+        <div class="mb-4">
+            <a href="{{ url_for('download_file') }}" class="btn btn-success">Download CSV without Anomalies</a>
+            <a href="/" class="btn btn-primary">Upload Another File</a>
+            <a href="/" class="btn btn-success">Go Home</a>
+        </div>
+        
+        <div class="table-responsive mt-4">
+            {{ anomalies|safe }}
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination mt-4">
+                {% if current_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('result', page=current_page - 1, min_prob=min_prob, max_prob=max_prob) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for page_num in range(1, total_pages + 1) %}
+                    <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('result', page=page_num, min_prob=min_prob, max_prob=max_prob) }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
+                {% if current_page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('result', page=current_page + 1, min_prob=min_prob, max_prob=max_prob) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</body>
+</html>
